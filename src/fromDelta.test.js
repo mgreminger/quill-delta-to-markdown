@@ -255,3 +255,13 @@ test('renders a separator block', function() {
     ])
   ).toEqual('Before' + '\n' + '\n' + '---' + '\n' + 'After' + '\n')
 });
+
+test('renders formula embed', function() {
+  expect(render([
+      { insert: "Inline formula " },
+      { insert: { formula: "\\sqrt{x}" } },
+      { insert: " followed by a formula on its own line:\n" },
+      { insert: { formula: "\\frac{x}{y}" } },
+      { insert: " \nText after formula.\n" },
+    ])).toEqual("Inline formula \\( \\sqrt{x} \\) followed by a formula on its own line:\n\\( \\frac{x}{y} \\) \nText after formula.\n");
+})

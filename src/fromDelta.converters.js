@@ -6,6 +6,9 @@ module.exports = {
     image: function(src) {
       this.append('![](' + encodeLink(src) + ')');
     },
+    formula: function(latex) {
+      this.append(String.raw`\( ${latex} \)`);
+    },
     // Not a default Quill feature, converts custom divider embed blot added when
     // creating quill editor instance.
     // See https://quilljs.com/guides/cloning-medium-with-parchment/#dividers
