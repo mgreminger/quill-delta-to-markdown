@@ -7,7 +7,7 @@ module.exports = {
       this.append('![](' + encodeLink(src) + ')');
     },
     formula: function(latex) {
-      this.append(String.raw`\( ${latex} \)`);
+      this.append(String.raw`$${latex.trim()}$`);
     },
     // Not a default Quill feature, converts custom divider embed blot added when
     // creating quill editor instance.
