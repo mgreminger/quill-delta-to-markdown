@@ -29,6 +29,20 @@ test('renders embed format', function() {
   ).toEqual('LOOK AT THE KITTEN!\n![](https://placekitten.com/g/200/300)\n')
 })
 
+test('renders image width inline attribute', function() {
+  expect(
+    render([
+      {
+        insert: 'Image with width:\n',
+      },
+      {
+        attributes: {width: "150"},
+        insert: {image: 'https://placekitten.com/g/200/300'},
+      },
+    ])
+  ).toEqual('Image with width:\n![](https://placekitten.com/g/200/300){width=150px}\n')
+})
+
 test('encodes image url', function() {
   expect(
     render([

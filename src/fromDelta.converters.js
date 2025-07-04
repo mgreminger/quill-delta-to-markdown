@@ -27,6 +27,9 @@ module.exports = {
     link: function(url) {
       return ['[', '](' + url + ')'];
     },
+    width: function(width) {
+      return ['', `{width=${width}px}`];
+    }
   },
 
   block: {
