@@ -3,8 +3,21 @@ const { encodeLink } = require('./utils/URL');
 
 module.exports = {
   embed: {
-    image: function(src) {
-      this.append('![](' + encodeLink(src) + ')');
+    image: function(src, attrs) {
+      let altText = "";
+      let width  = "";
+      if (attrs) {
+        altText = attrs['alt'] ? attrs['alt'] : "";
+        width = attrs['width'] ? attrs['width'] : "";
+      }
+
+      let imageTag = `![${altText}](${encodeLink(src)})`;
+
+      if (width) {
+        imageTag = imageTag + `{width="${width}px"}`;
+      }
+
+      this.append(imageTag)
     },
     formula: function(latex) {
       this.append(String.raw`$${latex.trim()}$`);
@@ -26,9 +39,6 @@ module.exports = {
     },
     link: function(url) {
       return ['[', '](' + url + ')'];
-    },
-    width: function(width) {
-      return ['', `{width=${width}px}`];
     }
   },
 

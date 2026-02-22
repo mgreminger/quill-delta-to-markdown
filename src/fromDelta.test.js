@@ -40,7 +40,35 @@ test('renders image width inline attribute', function() {
         insert: {image: 'https://placekitten.com/g/200/300'},
       },
     ])
-  ).toEqual('Image with width:\n![](https://placekitten.com/g/200/300){width=150px}\n')
+  ).toEqual('Image with width:\n![](https://placekitten.com/g/200/300){width="150px"}\n')
+})
+
+test('renders image alt inline attribute', function() {
+  expect(
+    render([
+      {
+        insert: 'Image with width:\n',
+      },
+      {
+        attributes: {alt: "A kitten"},
+        insert: {image: 'https://placekitten.com/g/200/300'},
+      },
+    ])
+  ).toEqual('Image with width:\n![A kitten](https://placekitten.com/g/200/300)\n')
+})
+
+test('renders image width and alt inline attribute', function() {
+  expect(
+    render([
+      {
+        insert: 'Image with width:\n',
+      },
+      {
+        attributes: {width: "150", alt: "A kitten"},
+        insert: {image: 'https://placekitten.com/g/200/300'},
+      },
+    ])
+  ).toEqual('Image with width:\n![A kitten](https://placekitten.com/g/200/300){width="150px"}\n')
 })
 
 test('encodes image url', function() {
