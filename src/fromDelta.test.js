@@ -29,6 +29,48 @@ test('renders embed format', function() {
   ).toEqual('LOOK AT THE KITTEN!\n![](https://placekitten.com/g/200/300)\n')
 })
 
+test('renders image width inline attribute', function() {
+  expect(
+    render([
+      {
+        insert: 'Image with width:\n',
+      },
+      {
+        attributes: {width: "150"},
+        insert: {image: 'https://placekitten.com/g/200/300'},
+      },
+    ])
+  ).toEqual('Image with width:\n![](https://placekitten.com/g/200/300){width="150px"}\n')
+})
+
+test('renders image alt inline attribute', function() {
+  expect(
+    render([
+      {
+        insert: 'Image with width:\n',
+      },
+      {
+        attributes: {alt: "A kitten"},
+        insert: {image: 'https://placekitten.com/g/200/300'},
+      },
+    ])
+  ).toEqual('Image with width:\n![A kitten](https://placekitten.com/g/200/300)\n')
+})
+
+test('renders image width and alt inline attribute', function() {
+  expect(
+    render([
+      {
+        insert: 'Image with width:\n',
+      },
+      {
+        attributes: {width: "150", alt: "A kitten"},
+        insert: {image: 'https://placekitten.com/g/200/300'},
+      },
+    ])
+  ).toEqual('Image with width:\n![A kitten](https://placekitten.com/g/200/300){width="150px"}\n')
+})
+
 test('encodes image url', function() {
   expect(
     render([
@@ -255,3 +297,13 @@ test('renders a separator block', function() {
     ])
   ).toEqual('Before' + '\n' + '\n' + '---' + '\n' + 'After' + '\n')
 });
+
+test('renders formula embed', function() {
+  expect(render([
+      { insert: "Inline formula " },
+      { insert: { formula: " \\sqrt{x} " } },
+      { insert: " followed by a formula on its own line:\n" },
+      { insert: { formula: "\\frac{x}{y}" } },
+      { insert: " \nText after formula.\n" },
+    ])).toEqual("Inline formula $\\sqrt{x}$ followed by a formula on its own line:\n$\\frac{x}{y}$ \nText after formula.\n");
+})
