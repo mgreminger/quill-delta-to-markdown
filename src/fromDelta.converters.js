@@ -30,7 +30,7 @@ module.exports = {
     },
   },
 
-  inline: {
+inline: {
     italic: function() {
       return ['_', '_'];
     },
@@ -39,6 +39,9 @@ module.exports = {
     },
     link: function(url) {
       return ['[', '](' + url + ')'];
+    },
+    pandocStyle: function(value) {
+      return ['[', ']{style="' + value + '"}'];
     }
   },
 

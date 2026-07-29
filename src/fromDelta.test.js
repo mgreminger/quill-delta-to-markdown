@@ -307,3 +307,78 @@ test('renders formula embed', function() {
       { insert: " \nText after formula.\n" },
     ])).toEqual("Inline formula $\\sqrt{x}$ followed by a formula on its own line:\n$\\frac{x}{y}$ \nText after formula.\n");
 })
+
+test('renders text color', function() {
+  expect(
+    render([
+      {
+        attributes: {
+          color: '#e60000',
+        },
+        insert: 'red text',
+      },
+    ])
+  ).toEqual('[red text]{style="color: #e60000;"}\n')
+})
+
+test('renders background color', function() {
+  expect(
+    render([
+      {
+        attributes: {
+          background: '#ffff00',
+        },
+        insert: 'yellow background',
+      },
+    ])
+  ).toEqual('[yellow background]{style="background-color: #ffff00;"}\n')
+})
+
+test('renders text and background color together in a single span', function() {
+  expect(
+    render([
+      {
+        attributes: {
+          color: '#e60000',
+          background: '#ffff00',
+        },
+        insert: 'both properties set',
+      },
+    ])
+  ).toEqual('[both properties set]{style="color: #e60000; background-color: #ffff00;"}\n')
+})
+
+test('renders colors mixed with other inline styles correctly', function() {
+  expect(
+    render([
+      {
+        attributes: {
+          italic: true,
+          color: '#e60000',
+          background: '#ffff00',
+          bold: true,
+        },
+        insert: 'all properties set',
+      },
+    ])
+  ).toEqual('_**[all properties set]{style="color: #e60000; background-color: #ffff00;"}**_\n')
+})
+
+test('renders full color delta chunk correctly', function() {
+  expect(
+    render([
+      { attributes: { color: "#e60000" }, insert: "red text" },
+      { insert: "\n" },
+      { attributes: { background: "#ffff00" }, insert: "yellow background" },
+      { insert: "\nplain text\n" },
+      { attributes: { bold: true }, insert: "bold" },
+      { insert: "\n" },
+      { attributes: { italic: true }, insert: "italics" },
+      { insert: "\n" },
+      { attributes: { italic: true, color: "#e60000", background: "#ffff00", bold: true }, insert: "all properties set" },
+      { insert: "\n" }
+    ])
+  ).toEqual(
+    '[red text]{style="color: #e60000;"}\n[yellow background]{style="background-color: #ffff00;"}\nplain text\n**bold**\n_italics_\n_**[all properties set]{style="color: #e60000; background-color: #ffff00;"}**_\n'
+  )
+})

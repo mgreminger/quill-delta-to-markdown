@@ -87,16 +87,43 @@ function convert(ops, converters) {
 
   return root;
 
-  function applyInlineAttributes(attrs, next) {
+  function applyInlineAttributes(rawAttrs, rawNext) {
+    var attrs = rawAttrs ? Object.assign({}, rawAttrs) : {};
+    var next = rawNext ? Object.assign({}, rawNext) : null;
+
+    // Helper to build a standard CSS style string
+    function buildStyle(a) {
+      if (!a.color && !a.background) return null;
+      let s = [];
+      if (a.color) s.push('color: ' + a.color);
+      if (a.background) s.push('background-color: ' + a.background);
+      return s.join('; ') + ';';
+    }
+
+    let attrStyle = buildStyle(attrs);
+    if (attrStyle) {
+      attrs.pandocStyle = attrStyle;
+      delete attrs.color;
+      delete attrs.background;
+    }
+    
+    let nextStyle = next ? buildStyle(next) : null;
+    if (nextStyle) {
+      next.pandocStyle = nextStyle;
+      delete next.color;
+      delete next.background;
+    }
+
     var first = [],
       then = [];
-    attrs = attrs || {};
 
     var tag = el,
       seen = {};
+      
     while (tag._format) {
       seen[tag._format] = true;
-      if (!attrs[tag._format]) {
+      
+      if (!attrs[tag._format] || activeInline[tag._format] !== attrs[tag._format]) {
         for (var k in seen) {
           delete activeInline[k]
         }
@@ -110,12 +137,12 @@ function convert(ops, converters) {
       if (converters.inline[attr]) {
         if (activeInline[attr]) {
           if (activeInline[attr] === attrs[attr]) {
-            continue; // do nothing -- we should already be inside this style's tag
+            continue; 
           }
         }
 
         if (next && attrs[attr] === next[attr]) {
-          first.push(attr); // if the next operation has the same style, this should be the outermost tag
+          first.push(attr); 
         } else {
           then.push(attr);
         }
