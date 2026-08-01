@@ -52,13 +52,13 @@ inline: {
     blockquote: function() {
       this.open = '> ' + this.open;
     },
-  'list': {
+    'list': {
       group: function() {
         return new Node(['', '\n']);
       },
       line: function(attrs, group) {
-        // Calculate the indent string (4 spaces per Quill indent level)
-        const indentStr = attrs.indent ? '    '.repeat(attrs.indent) : '';
+        const indentLevel = attrs.indent || 0;
+        const indentStr = indentLevel ? '    '.repeat(indentLevel) : '';
 
         if (attrs.list === 'bullet') {
           this.open = indentStr + '- ' + this.open;
@@ -67,9 +67,31 @@ inline: {
         } else if (attrs.list === "unchecked") {
           this.open = indentStr + '- [ ] ' + this.open;
         } else if (attrs.list === 'ordered') {
-          group.count = group.count || 0;
-          var count = ++group.count;
-          this.open = indentStr + count + '. ' + this.open;
+          group.counts = group.counts || [];
+          group.counts.splice(indentLevel + 1);
+          group.counts[indentLevel] = (group.counts[indentLevel] || 0) + 1;
+          
+          const count = group.counts[indentLevel];
+          let marker = count + '.';
+          
+          if (indentLevel % 3 === 1) {
+            // Level 2: Lower-alpha (a., b., c.)
+            marker = String.fromCharCode(96 + ((count - 1) % 26 + 1)) + '.';
+          } else if (indentLevel % 3 === 2) {
+            // Level 3: Lower-roman (i., ii., iii.)
+            let n = count;
+            const roman = [['x', 10], ['ix', 9], ['v', 5], ['iv', 4], ['i', 1]];
+            let str = '';
+            for (let i = 0; i < roman.length; i++) {
+              while (n >= roman[i][1]) {
+                str += roman[i][0];
+                n -= roman[i][1];
+              }
+            }
+            marker = str + '.';
+          }
+
+          this.open = indentStr + marker + ' ' + this.open;
         }
       },
     }

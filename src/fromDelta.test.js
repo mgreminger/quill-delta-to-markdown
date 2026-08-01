@@ -465,28 +465,68 @@ test('strips leading spaces before inline formulas', function() {
   ).toEqual('$x=1$ and text\n')
 })
 
-test('renders nested lists correctly based on quill indent attribute', function() {
+test('renders nested lists with decimal, alpha, and roman numerals cycling correctly', function() {
   expect(
     render([
       { insert: 'cats' },
       { insert: '\n', attributes: { list: 'ordered' } },
       { insert: 'dogs' },
       { insert: '\n', attributes: { list: 'ordered' } },
+      
+      // Indent 1: Lower-alpha
       { insert: 'zebras' },
       { insert: '\n', attributes: { list: 'ordered', indent: 1 } },
       { insert: 'giraffes' },
       { insert: '\n', attributes: { list: 'ordered', indent: 1 } },
-      { insert: '\n' }, // Blank line separates the lists
+      
+      // Indent 2: Lower-roman (going up to 11 to test 'xi')
+      { insert: 'ro 1' }, { insert: '\n', attributes: { list: 'ordered', indent: 2 } },
+      { insert: 'ro 2' }, { insert: '\n', attributes: { list: 'ordered', indent: 2 } },
+      { insert: 'ro 3' }, { insert: '\n', attributes: { list: 'ordered', indent: 2 } },
+      { insert: 'ro 4' }, { insert: '\n', attributes: { list: 'ordered', indent: 2 } },
+      { insert: 'ro 5' }, { insert: '\n', attributes: { list: 'ordered', indent: 2 } },
+      { insert: 'ro 6' }, { insert: '\n', attributes: { list: 'ordered', indent: 2 } },
+      { insert: 'ro 7' }, { insert: '\n', attributes: { list: 'ordered', indent: 2 } },
+      { insert: 'ro 8' }, { insert: '\n', attributes: { list: 'ordered', indent: 2 } },
+      { insert: 'ro 9' }, { insert: '\n', attributes: { list: 'ordered', indent: 2 } },
+      { insert: 'ro 10' }, { insert: '\n', attributes: { list: 'ordered', indent: 2 } },
+      { insert: 'ro 11' }, { insert: '\n', attributes: { list: 'ordered', indent: 2 } },
+      
+      // Indent 3: Cycles back to Decimal numbers
+      { insert: 'deep numbers 1' },
+      { insert: '\n', attributes: { list: 'ordered', indent: 3 } },
+      { insert: 'deep numbers 2' },
+      { insert: '\n', attributes: { list: 'ordered', indent: 3 } },
+      
+      // Blank line separating the lists
+      { insert: '\n' }, 
+      
+      // Bullets to confirm they still indent without numbering logic
       { insert: 'eagles' },
       { insert: '\n', attributes: { list: 'bullet' } },
       { insert: 'sparrows' },
-      { insert: '\n', attributes: { list: 'bullet' } },
-      { insert: 'pigeons' },
-      { insert: '\n', attributes: { list: 'bullet', indent: 1 } },
-      { insert: 'geese' },
       { insert: '\n', attributes: { list: 'bullet', indent: 1 } },
     ])
-    ).toEqual(
-        '1. cats\n2. dogs\n    3. zebras\n    4. giraffes\n\n\n- eagles\n- sparrows\n    - pigeons\n    - geese\n'
-    )
+  ).toEqual(
+    '1. cats\n' +
+    '2. dogs\n' +
+    '    a. zebras\n' +
+    '    b. giraffes\n' +
+    '        i. ro 1\n' +
+    '        ii. ro 2\n' +
+    '        iii. ro 3\n' +
+    '        iv. ro 4\n' +
+    '        v. ro 5\n' +
+    '        vi. ro 6\n' +
+    '        vii. ro 7\n' +
+    '        viii. ro 8\n' +
+    '        ix. ro 9\n' +
+    '        x. ro 10\n' +
+    '        xi. ro 11\n' +
+    '            1. deep numbers 1\n' +
+    '            2. deep numbers 2\n' +
+    '\n\n' +
+    '- eagles\n' +
+    '    - sparrows\n'
+  )
 })
