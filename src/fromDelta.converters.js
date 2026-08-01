@@ -52,21 +52,24 @@ inline: {
     blockquote: function() {
       this.open = '> ' + this.open;
     },
-    'list': {
+  'list': {
       group: function() {
         return new Node(['', '\n']);
       },
       line: function(attrs, group) {
+        // Calculate the indent string (4 spaces per Quill indent level)
+        const indentStr = attrs.indent ? '    '.repeat(attrs.indent) : '';
+
         if (attrs.list === 'bullet') {
-          this.open = '- ' + this.open;
+          this.open = indentStr + '- ' + this.open;
         } else if (attrs.list === "checked") {
-          this.open = '- [x] ' + this.open;
+          this.open = indentStr + '- [x] ' + this.open;
         } else if (attrs.list === "unchecked") {
-          this.open = '- [ ] ' + this.open;
+          this.open = indentStr + '- [ ] ' + this.open;
         } else if (attrs.list === 'ordered') {
           group.count = group.count || 0;
           var count = ++group.count;
-          this.open = count + '. ' + this.open;
+          this.open = indentStr + count + '. ' + this.open;
         }
       },
     }

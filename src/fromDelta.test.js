@@ -464,3 +464,29 @@ test('strips leading spaces before inline formulas', function() {
     ])
   ).toEqual('$x=1$ and text\n')
 })
+
+test('renders nested lists correctly based on quill indent attribute', function() {
+  expect(
+    render([
+      { insert: 'cats' },
+      { insert: '\n', attributes: { list: 'ordered' } },
+      { insert: 'dogs' },
+      { insert: '\n', attributes: { list: 'ordered' } },
+      { insert: 'zebras' },
+      { insert: '\n', attributes: { list: 'ordered', indent: 1 } },
+      { insert: 'giraffes' },
+      { insert: '\n', attributes: { list: 'ordered', indent: 1 } },
+      { insert: '\n' }, // Blank line separates the lists
+      { insert: 'eagles' },
+      { insert: '\n', attributes: { list: 'bullet' } },
+      { insert: 'sparrows' },
+      { insert: '\n', attributes: { list: 'bullet' } },
+      { insert: 'pigeons' },
+      { insert: '\n', attributes: { list: 'bullet', indent: 1 } },
+      { insert: 'geese' },
+      { insert: '\n', attributes: { list: 'bullet', indent: 1 } },
+    ])
+    ).toEqual(
+        '1. cats\n2. dogs\n    3. zebras\n    4. giraffes\n\n\n- eagles\n- sparrows\n    - pigeons\n    - geese\n'
+    )
+})
