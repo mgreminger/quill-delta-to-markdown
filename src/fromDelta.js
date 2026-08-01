@@ -9,13 +9,14 @@ exports = module.exports = function(ops, converters = defaultConverters) {
 };
 
 function convert(ops, converters) {
-  var group, line, el, activeInline, beginningOfLine;
+  var group, line, el, activeInline, beginningOfLine, lineHasContent;
   var root = new Node();
 
   function newLine() {
     el = line = new Node(['', '\n']);
     root.append(line);
     activeInline = {};
+    lineHasContent = false;
   }
   newLine();
 
@@ -27,6 +28,7 @@ function convert(ops, converters) {
         if (converters.embed[k]) {
           applyInlineAttributes(op.attributes);
           converters.embed[k].call(el, op.insert[k], op.attributes);
+          lineHasContent = true;
         }
       }
     } else {
@@ -64,7 +66,7 @@ function convert(ops, converters) {
 
               fn.call(line, op.attributes, group);
               newLine();
-              break
+              break;
             }
           }
         }
@@ -75,7 +77,20 @@ function convert(ops, converters) {
             group = null;
           }
           applyInlineAttributes(op.attributes, ops[i + 1] && ops[i + 1].attributes);
-          el.append(lines[l]);
+          
+          let text = lines[l];
+
+          // Strip leading spaces if we are at the very beginning of a line
+          if (!lineHasContent) {
+            text = text.trimStart();
+          }
+          
+          // If after trimming we have characters, the line now has content
+          if (text.length > 0) {
+            lineHasContent = true;
+          }
+
+          el.append(text);
           if (l < lines.length - 1) {
             newLine();
           }

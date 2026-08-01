@@ -382,3 +382,85 @@ test('renders full color delta chunk correctly', function() {
     '[red text]{style="color: #e60000;"}\n[yellow background]{style="background-color: #ffff00;"}\nplain text\n**bold**\n_italics_\n_**[all properties set]{style="color: #e60000; background-color: #ffff00;"}**_\n'
   )
 })
+
+test('strips leading spaces from standard paragraphs to prevent pandoc code blocks', function() {
+  expect(
+    render([
+      {
+        insert: '    cats and dogs\n',
+      },
+      {
+        insert: '\t\ttabs too\n',
+      },
+      {
+        insert: '  just a couple spaces\n',
+      },
+    ])
+  ).toEqual('cats and dogs\ntabs too\njust a couple spaces\n')
+})
+
+test('preserves spaces within the middle of a line', function() {
+  expect(
+    render([
+      {
+        insert: '    Start of line ',
+      },
+      {
+        attributes: { bold: true },
+        insert: 'bold text',
+      },
+      {
+        insert: ' end of line\n',
+      },
+    ])
+  ).toEqual('Start of line **bold text** end of line\n')
+})
+
+test('handles isolated space deltas at the beginning of a line', function() {
+  expect(
+    render([
+      {
+        insert: '   ', // User typed spaces, then hit Ctrl+B
+      },
+      {
+        attributes: { bold: true },
+        insert: 'bold word flush left',
+      },
+      {
+        insert: '\n',
+      },
+    ])
+  ).toEqual('**bold word flush left**\n')
+})
+
+test('strips leading spaces before images to prevent monospace rendering', function() {
+  expect(
+    render([
+      {
+        insert: '    ', // 4 spaces preceding the image
+      },
+      {
+        insert: {image: 'https://placekitten.com/g/200/300'},
+      },
+      {
+        insert: '\n',
+      },
+    ])
+  ).toEqual('![](https://placekitten.com/g/200/300)\n') // Note: '\n' behavior matches your other image tests
+})
+
+test('strips leading spaces before inline formulas', function() {
+  expect(
+    render([
+      {
+        insert: '    ',
+      },
+      {
+        insert: { formula: 'x=1' },
+      },
+      {
+        insert: ' and text\n',
+      },
+    ])
+  ).toEqual('$x=1$ and text\n')
+})
