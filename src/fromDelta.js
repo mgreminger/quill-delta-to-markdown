@@ -10,6 +10,10 @@ exports = module.exports = function(ops, converters = defaultConverters) {
   // Normalize 3 or more consecutive newlines down to exactly 2
   let normalizedText = rawText.replace(/\n{3,}/g, '\n\n');
   
+  // Remove the extra blank line right before a closing fence `:::`
+  // The (?=\n|$) ensures we only match the closing fence, not the opening `::: {`
+  normalizedText = normalizedText.replace(/\n\n:::(?=\n|$)/g, '\n:::');
+
   // Trim the end and ensure a consistent final double newline
   return trimEnd(normalizedText) + '\n\n';
 };

@@ -539,7 +539,7 @@ test('renders centered alignment correctly via fenced divs', function() {
       { insert: ' ' },
       { attributes: { align: 'center' }, insert: '\n' },
     ])
-  ).toEqual('\n::: {custom-style="align-center"}\nBelow is a centered equation:\n\n$x=y$ \n\n:::\n\n')
+  ).toEqual('\n::: {custom-style="align-center"}\nBelow is a centered equation:\n\n$x=y$ \n:::\n\n')
 })
 
 test('renders right alignment correctly via fenced divs', function() {
@@ -548,7 +548,7 @@ test('renders right alignment correctly via fenced divs', function() {
       { insert: 'This is right justified' },
       { attributes: { align: 'right' }, insert: '\n' },
     ])
-  ).toEqual('\n::: {custom-style="align-right"}\nThis is right justified\n\n:::\n\n')
+  ).toEqual('\n::: {custom-style="align-right"}\nThis is right justified\n:::\n\n')
 })
 
 test('renders justified alignment correctly via fenced divs', function() {
@@ -557,7 +557,7 @@ test('renders justified alignment correctly via fenced divs', function() {
       { insert: 'This is justified text' },
       { attributes: { align: 'justify' }, insert: '\n' },
     ])
-  ).toEqual('\n::: {custom-style="align-justify"}\nThis is justified text\n\n:::\n\n')
+  ).toEqual('\n::: {custom-style="align-justify"}\nThis is justified text\n:::\n\n')
 })
 
 test('breaks alignment groups when alignment value changes', function() {
@@ -571,7 +571,7 @@ test('breaks alignment groups when alignment value changes', function() {
       { attributes: { align: 'right' }, insert: '\n' },
     ])
   ).toEqual(
-    'left justified\n\n::: {custom-style="align-center"}\ncenter justified\n\n:::\n\n::: {custom-style="align-right"}\nright justified\n\n:::\n\n'
+    'left justified\n\n::: {custom-style="align-center"}\ncenter justified\n:::\n\n::: {custom-style="align-right"}\nright justified\n:::\n\n'
   )
 })
 
@@ -609,7 +609,6 @@ test('renders aligned blocks correctly via fenced divs', function() {
   ).toEqual(
     '\n::: {custom-style="align-center"}\n' +
     'Line 1\n\n' +
-    'Line 2\n\n' +
-    ':::\n\n'
+    'Line 2\n:::\n\n'
   )
 })
