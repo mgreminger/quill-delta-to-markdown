@@ -22,27 +22,17 @@ module.exports = {
     formula: function(latex) {
       this.append(String.raw`$${latex.trim()}$`);
     },
-    // Not a default Quill feature, converts custom divider embed blot added when
-    // creating quill editor instance.
-    // See https://quilljs.com/guides/cloning-medium-with-parchment/#dividers
     thematic_break: function() {
       this.open = '\n---\n' + this.open;
+      this.close = '\n'; // Prevent thematic break from adding an excessive third newline
     },
   },
 
-inline: {
-    italic: function() {
-      return ['_', '_'];
-    },
-    bold: function() {
-      return ['**', '**'];
-    },
-    link: function(url) {
-      return ['[', '](' + url + ')'];
-    },
-    pandocStyle: function(value) {
-      return ['[', ']{style="' + value + '"}'];
-    }
+  inline: {
+    italic: function() { return ['_', '_']; },
+    bold: function() { return ['**', '**']; },
+    link: function(url) { return ['[', '](' + url + ')']; },
+    pandocStyle: function(value) { return ['[', ']{style="' + value + '"}']; }
   },
 
   block: {
@@ -51,9 +41,8 @@ inline: {
         return new Node(['', '']); 
       },
       line: function(attrs, group) {
-        // Just output custom-style. DOCX reads this natively, Lua will parse it.
         group.el.open = `\n::: {custom-style="align-${attrs.align}"}\n`;
-        group.el.close = ':::\n';
+        group.el.close = ':::\n\n'; 
       }
     },
     'header': function({header}) {
@@ -67,6 +56,9 @@ inline: {
         return new Node(['', '\n']);
       },
       line: function(attrs, group) {
+        // Keep individual list items tight
+        this.close = '\n';
+        
         const indentLevel = attrs.indent || 0;
         const indentStr = indentLevel ? '    '.repeat(indentLevel) : '';
 
@@ -85,10 +77,8 @@ inline: {
           let marker = count + '.';
           
           if (indentLevel % 3 === 1) {
-            // Level 2: Lower-alpha (a., b., c.)
             marker = String.fromCharCode(96 + ((count - 1) % 26 + 1)) + '.';
           } else if (indentLevel % 3 === 2) {
-            // Level 3: Lower-roman (i., ii., iii.)
             let n = count;
             const roman = [['x', 10], ['ix', 9], ['v', 5], ['iv', 4], ['i', 1]];
             let str = '';

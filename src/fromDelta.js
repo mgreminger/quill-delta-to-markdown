@@ -5,7 +5,13 @@ const defaultConverters = require('./fromDelta.converters');
 const Node = require('./utils/Node');
 
 exports = module.exports = function(ops, converters = defaultConverters) {
-  return trimEnd(convert(ops, converters).render()) + '\n';
+  let rawText = convert(ops, converters).render();
+  
+  // Normalize 3 or more consecutive newlines down to exactly 2
+  let normalizedText = rawText.replace(/\n{3,}/g, '\n\n');
+  
+  // Trim the end and ensure a consistent final double newline
+  return trimEnd(normalizedText) + '\n\n';
 };
 
 function convert(ops, converters) {
@@ -13,7 +19,8 @@ function convert(ops, converters) {
   var root = new Node();
 
   function newLine() {
-    el = line = new Node(['', '\n']);
+    // Default to double newline for proper Markdown block separation
+    el = line = new Node(['', '\n\n']);
     root.append(line);
     activeInline = {};
     lineHasContent = false;
@@ -35,10 +42,6 @@ function convert(ops, converters) {
       var lines = op.insert.split('\n');
 
       if (hasBlockLevelAttribute(op.attributes, converters)) {
-        // Some line-level styling (ie headings) is applied by inserting a \n
-        // with the style; the style applies back to the previous \n.
-        // There *should* only be one style in an insert operation.
-
         for (var j = 1; j < lines.length; j++) {
           for (var attr in op.attributes) {
             if (converters.block[attr]) {
@@ -50,13 +53,10 @@ function convert(ops, converters) {
                   if (group.type !== attr) {
                     breakGroup = true;
                   } else if (group.value !== op.attributes[attr]) {
-                    // Check if this is just a task list toggling between checked and unchecked
                     const isCheckboxToggle = attr === 'list' && 
                       ['checked', 'unchecked'].includes(group.value) && 
                       ['checked', 'unchecked'].includes(op.attributes[attr]);
                     
-                    // Break the group for changing alignments or ordered vs bullet, 
-                    // but keep task list items together.
                     if (!isCheckboxToggle) {
                       breakGroup = true;
                     }
@@ -100,12 +100,10 @@ function convert(ops, converters) {
           
           let text = lines[l];
 
-          // Strip leading spaces if we are at the very beginning of a line
           if (!lineHasContent) {
             text = text.trimStart();
           }
           
-          // If after trimming we have characters, the line now has content
           if (text.length > 0) {
             lineHasContent = true;
           }
@@ -126,7 +124,6 @@ function convert(ops, converters) {
     var attrs = rawAttrs ? Object.assign({}, rawAttrs) : {};
     var next = rawNext ? Object.assign({}, rawNext) : null;
 
-    // Helper to build a standard CSS style string
     function buildStyle(a) {
       if (!a.color && !a.background) return null;
       let s = [];
@@ -149,11 +146,8 @@ function convert(ops, converters) {
       delete next.background;
     }
 
-    var first = [],
-      then = [];
-
-    var tag = el,
-      seen = {};
+    var first = [], then = [];
+    var tag = el, seen = {};
       
     while (tag._format) {
       seen[tag._format] = true;
@@ -164,7 +158,6 @@ function convert(ops, converters) {
         }
         el = tag.parent()
       }
-
       tag = tag.parent()
     }
 
