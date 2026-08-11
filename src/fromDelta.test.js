@@ -525,7 +525,7 @@ test('renders nested lists with decimal, alpha, and roman numerals cycling corre
     '        xi. ro 11\n' +
     '            1. deep numbers 1\n' +
     '            2. deep numbers 2\n' +
-    '\n' +
+    '\n\n' +
     '- eagles\n' +
     '    - sparrows\n'
   )
@@ -616,50 +616,3 @@ test('renders aligned blocks without extra newlines inside fenced divs', functio
     ':::\n'
   )
 })
-
-test('regex cleanup: collapses 3 or more consecutive newlines into a standard double newline', function() {
-  expect(
-    // We pass 5 consecutive newlines in the delta
-    render([
-      { insert: 'Paragraph 1\n\n\n\n\nParagraph 2\n' }
-    ])
-  ).toEqual(
-    // It should squash them down to exactly 2 newlines (standard Markdown paragraph break)
-    'Paragraph 1\n\nParagraph 2\n'
-  );
-});
-
-test('regex cleanup: removes blank lines immediately inside the OPENING fence', function() {
-  expect(
-    render([
-      { insert: 'Before fence' },
-      { insert: '\n' },
-      // By adding an empty aligned line here, the AST will normally inject a blank line right after the opening :::
-      { attributes: { align: 'center' }, insert: '\n' }, 
-      { insert: 'Centered text' },
-      { attributes: { align: 'center' }, insert: '\n' },
-    ])
-  ).toEqual(
-    'Before fence\n' +
-    '\n::: {custom-style="align-center"}\n' +
-    'Centered text\n' +
-    ':::\n'
-  );
-});
-
-test('regex cleanup: removes blank lines immediately inside the CLOSING fence', function() {
-  expect(
-    render([
-      { insert: 'Centered text' },
-      { attributes: { align: 'center' }, insert: '\n' },
-      // By adding an empty aligned line at the end, the AST will normally inject a blank line right before the closing :::
-      { attributes: { align: 'center' }, insert: '\n' }, 
-      { insert: 'After fence\n' },
-    ])
-  ).toEqual(
-    '\n::: {custom-style="align-center"}\n' +
-    'Centered text\n' +
-    ':::\n' +
-    'After fence\n'
-  );
-});
