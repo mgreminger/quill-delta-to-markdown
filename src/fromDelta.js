@@ -5,7 +5,20 @@ const defaultConverters = require('./fromDelta.converters');
 const Node = require('./utils/Node');
 
 exports = module.exports = function(ops, converters = defaultConverters) {
-  return trimEnd(convert(ops, converters).render()) + '\n';
+  let markdown = convert(ops, converters).render();
+  
+  // 1. Collapse 3+ consecutive newlines globally into just 2 (Standard Markdown block spacing)
+  markdown = markdown.replace(/\n{3,}/g, '\n\n');
+  
+  // 2. Remove blank lines immediately inside the OPENING fence
+  // (Looks for ::: { ... } followed by multiple newlines and tightens it)
+  markdown = markdown.replace(/(:::\s*\{[^}]+\})\n+/g, '$1\n');
+  
+  // 3. Remove blank lines immediately inside the CLOSING fence
+  // (Looks for multiple newlines followed by exactly ::: and no attributes)
+  markdown = markdown.replace(/\n+(:::(?!\s*\{))/g, '\n$1');
+
+  return trimEnd(markdown) + '\n';
 };
 
 function convert(ops, converters) {
