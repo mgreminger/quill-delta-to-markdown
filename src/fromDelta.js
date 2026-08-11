@@ -44,14 +44,34 @@ function convert(ops, converters) {
             if (converters.block[attr]) {
               var fn = converters.block[attr];
               if (typeof fn === 'object') {
-                if (group && group.type !== attr) {
+                let breakGroup = false;
+                
+                if (group) {
+                  if (group.type !== attr) {
+                    breakGroup = true;
+                  } else if (group.value !== op.attributes[attr]) {
+                    // Check if this is just a task list toggling between checked and unchecked
+                    const isCheckboxToggle = attr === 'list' && 
+                      ['checked', 'unchecked'].includes(group.value) && 
+                      ['checked', 'unchecked'].includes(op.attributes[attr]);
+                    
+                    // Break the group for changing alignments or ordered vs bullet, 
+                    // but keep task list items together.
+                    if (!isCheckboxToggle) {
+                      breakGroup = true;
+                    }
+                  }
+                }
+
+                if (breakGroup) {
                   group = null;
                 }
+                
                 if (!group && fn.group) {
                   group = {
                     el: fn.group(),
                     type: attr,
-                    value: op.attributes[k],
+                    value: op.attributes[attr], 
                     distance: 0,
                   };
                   root.append(group.el);

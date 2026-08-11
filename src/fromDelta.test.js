@@ -530,3 +530,73 @@ test('renders nested lists with decimal, alpha, and roman numerals cycling corre
     '    - sparrows\n'
   )
 })
+
+test('renders centered alignment correctly via fenced divs', function() {
+  expect(
+    render([
+      { insert: 'Below is a centered equation:' },
+      { attributes: { align: 'center' }, insert: '\n' },
+      { insert: { formula: 'x=y' } },
+      { insert: ' ' },
+      { attributes: { align: 'center' }, insert: '\n' },
+    ])
+  ).toEqual('\n::: {custom-style="align-center"}\nBelow is a centered equation:\n$x=y$ \n:::\n')
+})
+
+test('renders right alignment correctly via fenced divs', function() {
+  expect(
+    render([
+      { insert: 'This is right justified' },
+      { attributes: { align: 'right' }, insert: '\n' },
+    ])
+  ).toEqual('\n::: {custom-style="align-right"}\nThis is right justified\n:::\n')
+})
+
+test('renders justified alignment correctly via fenced divs', function() {
+  expect(
+    render([
+      { insert: 'This is justified text' },
+      { attributes: { align: 'justify' }, insert: '\n' },
+    ])
+  ).toEqual('\n::: {custom-style="align-justify"}\nThis is justified text\n:::\n')
+})
+
+test('breaks alignment groups when alignment value changes', function() {
+  expect(
+    render([
+      { insert: 'left justified' },
+      { insert: '\n' },
+      { insert: 'center justified' },
+      { attributes: { align: 'center' }, insert: '\n' },
+      { insert: 'right justified' },
+      { attributes: { align: 'right' }, insert: '\n' },
+    ])
+  ).toEqual(
+    'left justified\n' +
+    '\n::: {custom-style="align-center"}\ncenter justified\n:::\n' +
+    '\n::: {custom-style="align-right"}\nright justified\n:::\n'
+  )
+})
+
+test('breaks list groups when list format value changes', function() {
+  expect(
+    render([
+      { insert: 'bullet item 1' },
+      { attributes: { list: 'bullet' }, insert: '\n' },
+      { insert: 'bullet item 2' },
+      { attributes: { list: 'bullet' }, insert: '\n' },
+      { insert: 'numbered item 1' },
+      { attributes: { list: 'ordered' }, insert: '\n' },
+      { insert: 'numbered item 2' },
+      { attributes: { list: 'ordered' }, insert: '\n' },
+      { insert: 'task item 1' },
+      { attributes: { list: 'unchecked' }, insert: '\n' },
+    ])
+  ).toEqual(
+    '- bullet item 1\n' +
+    '- bullet item 2\n\n' +
+    '1. numbered item 1\n' +
+    '2. numbered item 2\n\n' +
+    '- [ ] task item 1\n'
+  )
+})
