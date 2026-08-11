@@ -48,7 +48,7 @@ inline: {
   block: {
     'align': {
       group: function() {
-        return new Node(['', '\n']);
+        return new Node(['', '']); 
       },
       line: function(attrs, group) {
         // Just output custom-style. DOCX reads this natively, Lua will parse it.

@@ -600,3 +600,19 @@ test('breaks list groups when list format value changes', function() {
     '- [ ] task item 1\n'
   )
 })
+
+test('renders aligned blocks without extra newlines inside fenced divs', function() {
+  expect(
+    render([
+      { insert: 'Line 1' },
+      { attributes: { align: 'center' }, insert: '\n' },
+      { insert: 'Line 2' },
+      { attributes: { align: 'center' }, insert: '\n' },
+    ])
+  ).toEqual(
+    '\n::: {custom-style="align-center"}\n' +
+    'Line 1\n' +
+    'Line 2\n' +
+    ':::\n'
+  )
+})
