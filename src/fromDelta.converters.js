@@ -46,9 +46,15 @@ inline: {
   },
 
   block: {
-    'align': function(attrs) {
-      this.open = `\n::: {custom-style="align-${attrs.align}"}\n` + (this.open || '');
-      this.close = '\n:::\n';
+    'align': {
+      group: function() {
+        return new Node(['', '']); 
+      },
+      line: function(attrs, group) {
+        // Just output custom-style. DOCX reads this natively, Lua will parse it.
+        group.el.open = `\n::: {custom-style="align-${attrs.align}"}\n`;
+        group.el.close = ':::\n';
+      }
     },
     'header': function({header}) {
       this.open = '#'.repeat(header) + ' ' + this.open;

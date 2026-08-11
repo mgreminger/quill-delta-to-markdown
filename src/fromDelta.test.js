@@ -540,10 +540,7 @@ test('renders centered alignment correctly via fenced divs', function() {
       { insert: ' ' },
       { attributes: { align: 'center' }, insert: '\n' },
     ])
-  ).toEqual(
-    '\n::: {custom-style="align-center"}\nBelow is a centered equation:\n:::\n' +
-    '\n::: {custom-style="align-center"}\n$x=y$ \n:::\n'
-  )
+  ).toEqual('\n::: {custom-style="align-center"}\nBelow is a centered equation:\n$x=y$ \n:::\n')
 })
 
 test('renders right alignment correctly via fenced divs', function() {
@@ -613,7 +610,9 @@ test('renders aligned blocks without extra newlines inside fenced divs', functio
       { attributes: { align: 'center' }, insert: '\n' },
     ])
   ).toEqual(
-    '\n::: {custom-style="align-center"}\nLine 1\n:::\n' +
-    '\n::: {custom-style="align-center"}\nLine 2\n:::\n'
+    '\n::: {custom-style="align-center"}\n' +
+    'Line 1\n' +
+    'Line 2\n' +
+    ':::\n'
   )
 })
